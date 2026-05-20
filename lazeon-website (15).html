@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAZEON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #0f0f0f;
+    --line: #262626;
+    --stroke: #d4d4d4;
+    --stroke-dim: #4a4a4a;
+    --stroke-faint: #2e2e2e;
+    --text: #e8e8e8;
+    --text-dim: #888888;
+    --text-faint: #555555;
+    --accent: #ff6b1a;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+  body.light {
+    --bg: #f2f2f0;
+    --surface: #ffffff;
+    --line: #d8d8d6;
+    --stroke: #1a1a1a;
+    --stroke-dim: #b0b0b0;
+    --stroke-faint: #dcdcda;
+    --text: #161616;
+    --text-dim: #6a6a6a;
+    --text-faint: #9a9a9a;
+    --accent: #e35a0f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto; padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo-link { display: block; line-height: 0; }
+  .logo-img {
+    height: 18px; width: auto; display: block;
+  }
+  /* 라이트 모드에서는 로고 반전 (흰 글자 -> 검정) */
+  body.light .logo-img { filter: invert(1); }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 13px; letter-spacing: 0.05em; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 130px 0 160px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 4.4vw, 52px);
+    font-weight: 500; line-height: 1.25; letter-spacing: -0.01em;
+    max-width: 920px; margin: 0 auto 22px;
+    white-space: nowrap;
+  }
+  .hero-sub {
+    font-size: 14.5px; color: var(--text-dim);
+    max-width: 680px; margin: 0 auto; letter-spacing: 0.02em;
+  }
+  .mb-break { display: inline; }
+  .mb-br2 { display: inline; }
+  .hero-visual { margin: 44px auto 0; max-width: 940px; position: relative; }
+  .hero-visual svg { width: 100%; height: auto; display: block; }
+
+  /* ---------- WIREFRAME STROKES ---------- */
+  .ws { fill: none; stroke: var(--stroke); stroke-width: 1; }
+  .wd { fill: none; stroke: var(--stroke-dim); stroke-width: 1; }
+  .wf { fill: none; stroke: var(--stroke-faint); stroke-width: 1; }
+  .wa { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+  .wlabel { fill: var(--text-faint); font-size: 8px; font-family: var(--mono); letter-spacing: 0.08em; }
+  .beam-dash { stroke-dasharray: 5 6; animation: flow 2.5s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -22; } }
+  .pulse { animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+  .pulse2 { animation: pulse 3s ease-in-out infinite; animation-delay: 1.5s; }
+
+  /* ---------- SECTION ---------- */
+  section {
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 130px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-margin-top: 0;
+  }
+  /* 한 화면 = 한 섹션: 풀하이트 섹션이라 점프 시 상단 정렬됨 */
+  /* 마지막 Contact 섹션: 콘텐츠 양에 맞는 자연 높이 + 위아래 균형 */
+  #contact {
+    min-height: auto;
+    padding: 130px 0;
+  }
+  .sec-tag {
+    text-align: center; font-size: 12.5px; letter-spacing: 0.24em;
+    color: var(--text-dim); margin-bottom: 22px;
+  }
+  .sec-intro {
+    text-align: center; max-width: 1100px; margin: 0 auto 60px;
+    font-size: clamp(15px, 1.55vw, 20px); font-weight: 400;
+    line-height: 1.55; color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* ---------- DIRECTION GRID ---------- */
+  .grid3 {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--line);
+  }
+  .grid3 .cell { border-right: 1px solid var(--line); }
+  .grid3 .cell:last-child { border-right: none; }
+  .cell-vis {
+    height: 210px; border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .cell-vis svg { width: 82%; height: auto; }
+  .grid3 .cell:hover .cell-vis svg .wf { stroke: var(--stroke-dim); transition: stroke 0.4s; }
+  .cell-body { padding: 28px 26px; }
+  .cell-num {
+    font-size: 12px; color: var(--text-faint); letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .cell-body h3 {
+    font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
+    margin-bottom: 12px;
+  }
+  .cell-body p { font-size: 13.5px; color: var(--text-dim); }
+
+  /* ---------- STATEMENT ---------- */
+  .statement {
+    border: 1px solid var(--line); background: var(--surface);
+    padding: 52px 48px; text-align: center;
+    margin: 56px 0 0;
+  }
+  .statement .mark {
+    font-size: 12.5px; letter-spacing: 0.2em; color: var(--text-faint);
+    margin-bottom: 16px;
+  }
+  .statement p {
+    font-size: clamp(15px, 1.55vw, 20px); font-weight: 400;
+    line-height: 1.6; color: var(--text);
+    max-width: 900px; margin: 0 auto;
+    white-space: nowrap;
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    align-items: stretch;
+    margin-bottom: 24px;
+  }
+  .contact-card {
+    border: 1px solid var(--line); background: var(--surface);
+    padding: 40px 36px;
+    position: relative;
+    transition: border-color 0.25s;
+    display: flex; flex-direction: column;
+  }
+  .contact-card:hover { border-color: var(--stroke-dim); }
+  .cc-tag {
+    font-size: 11px; letter-spacing: 0.22em;
+    color: var(--text-faint); margin-bottom: 20px;
+  }
+  .cc-main {
+    font-size: clamp(19px, 2.6vw, 26px);
+    font-weight: 500; color: var(--text);
+    margin-bottom: 18px; letter-spacing: 0.01em;
+    display: inline-block; text-decoration: none;
+  }
+  a.cc-main {
+    border-bottom: 1px solid var(--stroke-dim);
+    padding-bottom: 4px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  a.cc-main:hover { color: var(--accent); border-color: var(--accent); }
+  .cc-line {
+    font-size: 13px; color: var(--text-dim); line-height: 1.9;
+  }
+  .cc-corner {
+    position: absolute; top: 14px; right: 14px;
+    width: 14px; height: 14px;
+    border-top: 1px solid var(--stroke-dim);
+    border-right: 1px solid var(--stroke-dim);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--line); padding: 56px 0 48px; text-align: center;
+  }
+  .foot-meta { font-size: 12.5px; color: var(--text-faint); line-height: 2; }
+
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px) {
+    /* ----- 레이아웃 기본 ----- */
+    .wrap { padding: 0 22px; }
+    .nav-inner { padding: 13px 22px; }
+
+    /* ----- 네비게이션 ----- */
+    .nav-links { gap: 18px; }
+    .nav-links a { font-size: 12px; letter-spacing: 0.03em; }
+    .logo-img { height: 15px; }
+
+    /* ----- 히어로 ----- */
+    .hero {
+      min-height: auto;
+      display: block;
+      padding: 80px 0 70px;
+    }
+    .hero h1 {
+      white-space: normal;
+      font-size: clamp(23px, 6.6vw, 34px);
+      line-height: 1.3;
+      max-width: 100%;
+      margin-bottom: 18px;
+    }
+    .hero-sub {
+      font-size: 13px;
+      max-width: 280px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+    .hero-visual { margin-top: 36px; }
+    /* 모바일에서만 줄바꿈 */
+    .mb-break, .mb-br2 { display: block; height: 0; }
+
+    /* ----- 섹션 공통 ----- */
+    section {
+      min-height: auto;
+      display: block;
+      padding: 76px 0;
+    }
+    .sec-tag { font-size: 11px; margin-bottom: 16px; }
+    .sec-intro {
+      white-space: normal;
+      word-break: keep-all;
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 100%;
+      margin-bottom: 40px;
+    }
+
+    /* ----- About 그리드 ----- */
+    .grid3 { grid-template-columns: 1fr; }
+    .grid3 .cell { border-right: none; border-bottom: 1px solid var(--line); }
+    .grid3 .cell:last-child { border-bottom: none; }
+    .cell-vis { height: 200px; }
+
+    /* ----- statement 박스 ----- */
+    .statement { padding: 40px 24px; margin-top: 40px; }
+    .statement p { white-space: normal; word-break: keep-all; font-size: 15px; line-height: 1.65; }
+
+    /* ----- Contact ----- */
+    #contact { padding: 76px 0; }
+    .contact-grid { grid-template-columns: 1fr; gap: 16px; }
+    .contact-card { padding: 32px 24px; }
+    .cc-main { font-size: clamp(17px, 5vw, 22px); }
+    .contact-card .cc-main[href] { word-break: break-all; }
+
+    /* ----- 푸터 ----- */
+    .foot-meta { font-size: 11px; padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="logo-link" aria-label="LAZEON 홈"><img class="logo-img" src="data:image/png;base64,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" alt="LAZEON"></a>
+    <div class="nav-links">
+      <a href="#direction">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero wrap" id="top">
+  <h1>From a Laser Module<br>to a Dental<span class="mb-br2"> </span>Laser Platform.</h1>
+  <p class="hero-sub">
+    라제온은 다이오드 레이저 기술을 기반으로<span class="mb-break"> </span>차세대 치과 의료기기 플랫폼을 만들어갑니다.
+  </p>
+
+  <!-- 정밀 도면: 레이저 광학계 + 제어 보드 -->
+  <div class="hero-visual">
+    <svg viewBox="0 0 940 380" xmlns="http://www.w3.org/2000/svg">
+      <!-- 외곽 프레임 + 코너 마커 -->
+      <rect class="wf" x="20" y="20" width="900" height="340"/>
+      <path class="wd" d="M20 44 L20 20 L44 20"/>
+      <path class="wd" d="M896 20 L920 20 L920 44"/>
+      <path class="wd" d="M920 336 L920 360 L896 360"/>
+      <path class="wd" d="M44 360 L20 360 L20 336"/>
+      <text class="wlabel" x="34" y="38">LAZEON / OPTICAL ASSEMBLY</text>
+      <text class="wlabel" x="800" y="38">REV. 2026</text>
+
+      <!-- 광축 -->
+      <line class="wd" x1="70" y1="185" x2="880" y2="185" stroke-dasharray="2 4"/>
+
+      <!-- 레이저 다이오드 소스 -->
+      <rect class="ws" x="78" y="150" width="86" height="70"/>
+      <line class="wd" x1="78" y1="166" x2="164" y2="166"/>
+      <line class="wd" x1="78" y1="204" x2="164" y2="204"/>
+      <rect class="wf" x="90" y="172" width="28" height="26"/>
+      <rect class="wf" x="124" y="172" width="28" height="26"/>
+      <circle class="wa pulse" cx="164" cy="185" r="5"/>
+      <text class="wlabel" x="92" y="240">LD SOURCE</text>
+
+      <!-- 발산 빔 -->
+      <line class="wa" x1="164" y1="185" x2="270" y2="138"/>
+      <line class="wa" x1="164" y1="185" x2="270" y2="232"/>
+      <line class="wa beam-dash" x1="164" y1="185" x2="270" y2="185"/>
+
+      <!-- 콜리메이팅 렌즈 -->
+      <ellipse class="ws" cx="284" cy="185" rx="14" ry="58"/>
+      <line class="wd" x1="284" y1="127" x2="284" y2="115"/>
+      <circle class="wf" cx="284" cy="111" r="3"/>
+      <text class="wlabel" x="250" y="265">COLLIMATE</text>
+
+      <!-- 평행 빔 -->
+      <line class="wa beam-dash" x1="298" y1="150" x2="470" y2="150"/>
+      <line class="wa beam-dash" x1="298" y1="185" x2="470" y2="185"/>
+      <line class="wa beam-dash" x1="298" y1="220" x2="470" y2="220"/>
+
+      <!-- 빔 스플리터 (45도) -->
+      <rect class="ws" x="362" y="163" width="44" height="44" transform="rotate(45 384 185)"/>
+      <line class="wd" x1="384" y1="185" x2="384" y2="120"/>
+      <line class="wa beam-dash" x1="384" y1="185" x2="384" y2="130"/>
+      <circle class="wf pulse2" cx="384" cy="126" r="3"/>
+      <text class="wlabel" x="350" y="290">SPLITTER</text>
+
+      <!-- 집광 렌즈 -->
+      <ellipse class="ws" cx="486" cy="185" rx="16" ry="62"/>
+      <text class="wlabel" x="456" y="265">FOCUS</text>
+
+      <!-- 수렴 빔 -->
+      <line class="wa" x1="502" y1="150" x2="640" y2="185"/>
+      <line class="wa" x1="502" y1="220" x2="640" y2="185"/>
+      <line class="wa beam-dash" x1="502" y1="185" x2="640" y2="185"/>
+
+      <!-- 포커스 + 광섬유 커플러 -->
+      <circle class="wa pulse" cx="640" cy="185" r="6"/>
+      <circle class="wf" cx="640" cy="185" r="22"/>
+      <line class="ws" x1="640" y1="176" x2="740" y2="176"/>
+      <line class="ws" x1="640" y1="194" x2="740" y2="194"/>
+      <line class="wf" x1="652" y1="185" x2="740" y2="185" stroke-dasharray="2 3"/>
+      <rect class="ws" x="740" y="160" width="50" height="50"/>
+      <circle class="wf" cx="765" cy="185" r="14"/>
+      <circle class="wf" cx="765" cy="185" r="6"/>
+      <text class="wlabel" x="620" y="240">FIBER COUPLING</text>
+
+      <!-- 제어 보드 (우측) -->
+      <rect class="wf" x="812" y="150" width="86" height="80"/>
+      <line class="wf" x1="826" y1="150" x2="826" y2="230"/>
+      <line class="wf" x1="884" y1="150" x2="884" y2="230"/>
+      <rect class="wd" x="834" y="166" width="42" height="22"/>
+      <circle class="wf" cx="841" cy="206" r="4"/>
+      <circle class="wf" cx="855" cy="206" r="4"/>
+      <circle class="wf" cx="869" cy="206" r="4"/>
+      <line class="wf" x1="790" y1="185" x2="812" y2="185"/>
+      <text class="wlabel" x="820" y="248">CTRL</text>
+
+      <!-- 하단 치수선 -->
+      <line class="wf" x1="78" y1="320" x2="790" y2="320"/>
+      <line class="wf" x1="78" y1="315" x2="78" y2="325"/>
+      <line class="wf" x1="284" y1="315" x2="284" y2="325"/>
+      <line class="wf" x1="486" y1="315" x2="486" y2="325"/>
+      <line class="wf" x1="640" y1="315" x2="640" y2="325"/>
+      <line class="wf" x1="790" y1="315" x2="790" y2="325"/>
+      <text class="wlabel" x="400" y="340">OPTICAL PATH</text>
+    </svg>
+  </div>
+</header>
+
+<!-- DIRECTION -->
+<section id="direction" class="wrap">
+  <div class="sec-tag">ABOUT</div>
+  <p class="sec-intro">
+    레이저 광원의 핵심 모듈을 직접 다루는 기술력을 바탕으로,<span class="mb-break"> </span>치과 임상 현장에서 실제로 쓰이는 디바이스를 만듭니다.
+  </p>
+  <div class="grid3">
+    <!-- 01 RESEARCH : 파장 스펙트럼 도면 -->
+    <div class="cell">
+      <div class="cell-vis">
+        <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wf" x="14" y="14" width="192" height="122"/>
+          <!-- 그리드 -->
+          <line class="wf" x1="14" y1="48" x2="206" y2="48"/>
+          <line class="wf" x1="14" y1="82" x2="206" y2="82"/>
+          <line class="wf" x1="78" y1="14" x2="78" y2="136"/>
+          <line class="wf" x1="142" y1="14" x2="142" y2="136"/>
+          <!-- 축 -->
+          <line class="wd" x1="26" y1="118" x2="194" y2="118"/>
+          <line class="wd" x1="26" y1="26" x2="26" y2="118"/>
+          <!-- 스펙트럼 곡선 -->
+          <path class="wa" d="M26 108 Q 52 108 64 74 Q 74 44 92 72 Q 108 100 128 56 Q 142 28 162 78 Q 174 100 194 92"/>
+          <circle class="wa pulse" cx="92" cy="72" r="2.6"/>
+          <circle class="wa pulse2" cx="128" cy="56" r="2.6"/>
+          <!-- 측정 마커 -->
+          <line class="wd" x1="92" y1="72" x2="92" y2="118" stroke-dasharray="2 3"/>
+          <line class="wd" x1="128" y1="56" x2="128" y2="118" stroke-dasharray="2 3"/>
+          <text class="wlabel" x="30" y="132">WAVELENGTH</text>
+        </svg>
+      </div>
+      <div class="cell-body">
+        <div class="cell-num">01</div>
+        <h3>OPTICS</h3>
+        <p>레이저 광원 기술을 깊이 있게 다룹니다.</p>
+      </div>
+    </div>
+    <!-- 02 ENGINEERING : 모듈 분해 조립도 -->
+    <div class="cell">
+      <div class="cell-vis">
+        <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wf" x="14" y="14" width="192" height="122"/>
+          <!-- 다이오드 모듈 -->
+          <rect class="ws" x="32" y="56" width="50" height="40"/>
+          <rect class="wf" x="40" y="64" width="34" height="24"/>
+          <line class="wd" x1="32" y1="68" x2="82" y2="68"/>
+          <circle class="wf" cx="57" cy="48" r="2.4"/>
+          <line class="wf" x1="57" y1="56" x2="57" y2="50"/>
+          <!-- 렌즈 마운트 -->
+          <rect class="ws" x="104" y="48" width="38" height="56"/>
+          <ellipse class="wd" cx="123" cy="76" rx="9" ry="20"/>
+          <line class="wf" x1="104" y1="60" x2="142" y2="60"/>
+          <line class="wf" x1="104" y1="92" x2="142" y2="92"/>
+          <circle class="wf" cx="123" cy="40" r="2.4"/>
+          <line class="wf" x1="123" y1="48" x2="123" y2="42"/>
+          <!-- 빔 경로 -->
+          <line class="wa beam-dash" x1="82" y1="76" x2="104" y2="76"/>
+          <!-- 출력 커넥터 -->
+          <line class="ws" x1="142" y1="76" x2="176" y2="76"/>
+          <circle class="ws" cx="184" cy="76" r="9"/>
+          <circle class="wf" cx="184" cy="76" r="4"/>
+          <!-- 분해 지시선 -->
+          <line class="wf" x1="57" y1="96" x2="57" y2="112" stroke-dasharray="2 2"/>
+          <line class="wf" x1="123" y1="104" x2="123" y2="118" stroke-dasharray="2 2"/>
+          <text class="wlabel" x="32" y="128">MODULE ASSY</text>
+        </svg>
+      </div>
+      <div class="cell-body">
+        <div class="cell-num">02</div>
+        <h3>CLINICAL</h3>
+        <p>치과 임상 현장의 시각으로 접근합니다.</p>
+      </div>
+    </div>
+    <!-- 03 MANUFACTURING : 양산 라인 도면 -->
+    <div class="cell">
+      <div class="cell-vis">
+        <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wf" x="14" y="14" width="192" height="122"/>
+          <!-- 컨베이어 -->
+          <line class="wd" x1="22" y1="106" x2="198" y2="106"/>
+          <line class="wf" x1="22" y1="112" x2="198" y2="112"/>
+          <!-- 스테이션 4개 -->
+          <rect class="ws" x="30" y="74" width="30" height="30"/>
+          <rect class="wf" x="36" y="80" width="18" height="12"/>
+          <rect class="ws" x="74" y="74" width="30" height="30"/>
+          <rect class="wf" x="80" y="80" width="18" height="12"/>
+          <rect class="ws" x="118" y="74" width="30" height="30"/>
+          <rect class="wf" x="124" y="80" width="18" height="12"/>
+          <rect class="wa" x="162" y="74" width="30" height="30"/>
+          <rect class="wf" x="168" y="80" width="18" height="12"/>
+          <!-- 공정 헤드 -->
+          <circle class="wf" cx="45" cy="48" r="3"/>
+          <circle class="wf" cx="89" cy="48" r="3"/>
+          <circle class="wf" cx="133" cy="48" r="3"/>
+          <circle class="wa pulse" cx="177" cy="48" r="3"/>
+          <line class="wf" x1="45" y1="51" x2="45" y2="74"/>
+          <line class="wf" x1="89" y1="51" x2="89" y2="74"/>
+          <line class="wf" x1="133" y1="51" x2="133" y2="74"/>
+          <line class="wa" x1="177" y1="51" x2="177" y2="74"/>
+          <!-- 진행 화살 -->
+          <line class="wa beam-dash" x1="60" y1="89" x2="74" y2="89"/>
+          <line class="wa beam-dash" x1="104" y1="89" x2="118" y2="89"/>
+          <line class="wa beam-dash" x1="148" y1="89" x2="162" y2="89"/>
+          <text class="wlabel" x="30" y="128">PRODUCTION LINE</text>
+        </svg>
+      </div>
+      <div class="cell-body">
+        <div class="cell-num">03</div>
+        <h3>PLATFORM</h3>
+        <p>하나의 기술을 여러 영역으로 넓혀 갑니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="statement">
+    <p>
+      라제온은 다이오드 레이저 기반 의료기기를 자체 설계&middot;제조하는<span class="mb-break"> </span>R&amp;D 중심 기업입니다.
+    </p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="wrap">
+  <div class="sec-tag">CONTACT</div>
+  <p class="sec-intro" style="margin-bottom:32px;">
+    제품 &middot; 기술 &middot; 파트너십에 대한<span class="mb-break"> </span>문의를 환영합니다.
+  </p>
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="cc-corner"></div>
+      <div class="cc-tag">COMPANY</div>
+      <div class="cc-main">주식회사 라제온</div>
+      <div class="cc-line">
+        LAZEON CORP.
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="cc-corner"></div>
+      <div class="cc-tag">EMAIL</div>
+      <a href="mailto:admin@lazeon.ai" class="cc-main">admin@lazeon.ai</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-meta">
+      LAZEON CORP. &nbsp;·&nbsp; Laser Medical Device Company<br>
+      &copy; 2026 LAZEON. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>

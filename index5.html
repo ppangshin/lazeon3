@@ -65,7 +65,7 @@
   .nav-links { display: flex; gap: 28px; }
   .nav-links a {
     color: var(--text-dim); text-decoration: none;
-    font-size: 13px; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s;
+    font-size: 13px; letter-spacing: 0.05em; transition: color 0.2s;
   }
   .nav-links a:hover { color: var(--text); }
 
@@ -81,16 +81,13 @@
     white-space: nowrap;
   }
   .hero-sub {
-    font-size: clamp(15px, 1.55vw, 20px); line-height: 1.55; color: var(--text-dim);
-    max-width: 920px; margin: 0 auto; letter-spacing: 0.02em;
+    font-size: 14.5px; color: var(--text-dim);
+    max-width: 680px; margin: 0 auto; letter-spacing: 0.02em;
   }
   .mb-break { display: inline; }
   .mb-br2 { display: inline; }
-  .hero-visual {
-    margin: 44px auto 0; max-width: 940px; position: relative;
-    aspect-ratio: 940 / 380;
-  }
-  .hero-visual svg { width: 100%; height: 100%; display: block; }
+  .hero-visual { margin: 44px auto 0; max-width: 940px; position: relative; }
+  .hero-visual svg { width: 100%; height: auto; display: block; }
 
   /* ---------- WIREFRAME STROKES ---------- */
   .ws { fill: none; stroke: var(--stroke); stroke-width: 1; }
@@ -240,7 +237,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 80px 22px 70px;
+      padding: 80px 0 70px;
     }
     .hero h1 {
       white-space: nowrap;
@@ -250,21 +247,23 @@
       margin-bottom: 18px;
     }
     .hero-sub {
-      font-size: 12.5px;
+      font-size: 12px;
       max-width: 340px;
       line-height: 1.7;
       word-break: keep-all;
     }
     .hero-visual {
       margin-top: 36px;
-      margin-bottom: 28px;
-      width: 100%;
-      aspect-ratio: 940 / 470;   /* 원본 비율(940/380)보다 세로로 살짝 길게 */
+      margin-left: -10px;
+      margin-right: -10px;
+      width: calc(100% + 20px);
+      max-width: calc(100% + 20px);
     }
-    /* 모바일: 도면이 컨테이너를 가로·세로 꽉 채우도록 */
+    /* 모바일: 도면을 가로·세로 살짝 키워 부품·라벨 가독성 확보 */
     .hero-visual svg {
-      width: 100%;
-      height: 100%;
+      transform: scale(1.04, 1.3);
+      transform-origin: center top;
+      margin-bottom: 28px;
     }
     /* 모바일에서만 줄바꿈 */
     .mb-break, .mb-br2 { display: block; height: 0; }
@@ -331,7 +330,7 @@
 
   <!-- 정밀 도면: 레이저 광학계 + 제어 보드 -->
   <div class="hero-visual">
-    <svg viewBox="0 0 940 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 940 380" xmlns="http://www.w3.org/2000/svg">
       <!-- 외곽 프레임 + 코너 마커 -->
       <rect class="wf" x="20" y="20" width="900" height="340"/>
       <path class="wd" d="M20 44 L20 20 L44 20"/>
